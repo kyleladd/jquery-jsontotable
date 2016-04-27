@@ -12,8 +12,7 @@
     if (typeof obj === "string") {
       obj = $.parseJSON(obj);
     }
-
-    if (options.id && obj.length) {
+    if (options.id) {
 
       var i, row;
       var table = $("<table></table>");
@@ -106,7 +105,12 @@
 
       var dictType = false, headerObj = {}, key = null;
       if (options.header) {
-        headerObj = obj[0]._data ? clone(obj[0]._data) : clone(obj[0]);
+        if(typeof obj.length !== "undefined"){
+          headerObj = obj[0]._data ? clone(obj[0]._data) : clone(obj[0]);
+        }
+        else{
+          headerObj = obj._data ? clone(obj._data) : clone(obj);
+        }
         
         if (headerObj.toString() === "[object Object]") { // data type is dictonary
           dictType = true;
@@ -115,22 +119,31 @@
 
         table.appendTr(headerObj, true);
       }
-
-      /**
-      /* MODIFIED: options.header ? 1 : 0
-      /* to eliminate duplicating header as the first row of data 
-      **/
-      for (i = (options.header ? 1 : 0); i < obj.length; i++) { 
+      if(obj.length){
+        for (i = 0; i < obj.length; i++) { 
+          if (dictType && headerObj) {
+            var bodyItem = {};
+            for (key in headerObj) {
+              bodyItem[key] = (obj[i] && obj[i][key] != null) ? obj[i][key] : "";
+            }
+            
+            table.appendTr(bodyItem, false);
+            
+          }else {
+            table.appendTr(obj[i], false);
+          }
+        }
+      }
+      else{
         if (dictType && headerObj) {
           var bodyItem = {};
           for (key in headerObj) {
-            bodyItem[key] = (obj[i] && obj[i][key] != null) ? obj[i][key] : "";
+            bodyItem[key] = (obj && obj[key] != null) ? obj[key] : "";
           }
-          
           table.appendTr(bodyItem, false);
-          
-        }else {
-          table.appendTr(obj[i], false);
+        }
+        else {
+          table.appendTr(obj, false);
         }
       }
 
