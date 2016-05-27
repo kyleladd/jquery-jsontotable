@@ -7,10 +7,15 @@
     }, options);
 
     options = $.extend(settings, options);
-
+    var isArray = Array.isArray || function(obj) {
+      return toString.call(obj) === '[object Array]';
+    };
     var obj = data;
     if (typeof obj === "string") {
       obj = $.parseJSON(obj);
+    }
+    if(!isArray(obj)){
+      obj = [obj];
     }
 
     if (options.id && obj.length) {
@@ -107,7 +112,7 @@
       var dictType = false, headerObj = {}, key = null;
       if (options.header) {
         headerObj = obj[0]._data ? clone(obj[0]._data) : clone(obj[0]);
-        
+
         if (headerObj.toString() === "[object Object]") { // data type is dictonary
           dictType = true;
           for (key in headerObj) { headerObj[key] = key; }
@@ -118,22 +123,30 @@
 
       /**
       /* MODIFIED: options.header ? 1 : 0
-      /* to eliminate duplicating header as the first row of data 
+      /* to eliminate duplicating header as the first row of data
       **/
-      for (i = (options.header ? 1 : 0); i < obj.length; i++) { 
+      for (i = (options.header ? 1 : 0); i < obj.length; i++) {
         if (dictType && headerObj) {
           var bodyItem = {};
-          for (key in headerObj) {
+          var isArray = Array.isArray || function(obj) {
+  return toString.call(obj) === '[object Array]';
+};key in headerObj) {
             bodyItem[key] = (obj[i] && obj[i][key] != null) ? obj[i][key] : "";
           }
-          
-          table.appendTr(bodyItem, false);
-          
-        }else {
+
+          table.appendTr(bodyIte
+            if(){
+            }m, false);
+
+            var isArray = Array.isArray || function(obj) {
+            return toString.call(obj) === '[object Array]';
+          };      }else {
           table.appendTr(obj[i], false);
         }
       }
 
+if(){
+}
       $(options.id).append(table);
     }
 
