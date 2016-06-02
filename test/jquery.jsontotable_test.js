@@ -84,6 +84,7 @@
     equal(target.text(), str.replace(/[\[\], ]/gi, ""));
 
     target.empty();
+    // The first row is the header
     $.jsontotable(str, { id: "#test2", header: true });
     equal(target.find("thead").length, 1);
     equal(target.find("tbody").length, 1);
@@ -118,10 +119,10 @@
     target.empty();
     $.jsontotable(str, { id: "#test3", header: true });
     equal(target.find("thead").length, 1);
-    equal(target.find("tbody").length, 0);
+    equal(target.find("tbody").length, 1);
     equal(target.find("th").length, 3);
-    equal(target.find("tr").length, 1);
-    equal(target.find("td").length, 0);
+    equal(target.find("tr").length, 2);
+    equal(target.find("td").length, 3);
 
     str = '[{ "a": 1, "b": 2, "c": 3 }, { "a": 1, "b": 2, "c": 3 }]';
 
@@ -138,16 +139,16 @@
     equal(target.find("thead").length, 1);
     equal(target.find("tbody").length, 1);
     equal(target.find("th").length, 3);
-    equal(target.find("tr").length, 2);
-    equal(target.find("td").length, 3);
+    equal(target.find("tr").length, 3);
+    equal(target.find("td").length, 6);
 
     target.empty();
     $.jsontotable(str, { id: "#test3" });
     equal(target.find("thead").length, 1);
     equal(target.find("tbody").length, 1);
     equal(target.find("th").length, 3);
-    equal(target.find("tr").length, 2);
-    equal(target.find("td").length, 3);
+    equal(target.find("tr").length, 3);
+    equal(target.find("td").length, 6);
   });
 
   test("Test4 for _data Attribute", function() {
@@ -185,7 +186,18 @@
     equal(target.find("thead").length, 1);
     equal(target.find("tbody").length, 1);
     equal(target.find("th").length, 2);
-    equal(target.find("tr").length, 6);
-    equal(target.find("td").length, 10);
+    equal(target.find("tr").length, 7);
+    equal(target.find("td").length, 12);
+  });
+  test("Test6 for single element in dictionary", function() {
+    var target = $("#test6");
+    var data = [{ "a": 1, "b": 2, "c": 3 }];
+    target.empty();
+    $.jsontotable(data, { id: "#test6", header: true });
+    equal(target.find("thead").length, 1);
+    equal(target.find("tbody").length, 1);
+    equal(target.find("th").length, 3);
+    equal(target.find("tr").length, 2);
+    equal(target.find("td").length, 3);
   });
 }(jQuery));

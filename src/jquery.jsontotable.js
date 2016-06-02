@@ -7,12 +7,17 @@
     }, options);
 
     options = $.extend(settings, options);
-
+    // Underscorejs
+    var isArray = Array.isArray || function(obj) {
+      return Object.prototype.call(obj) === '[object Array]';
+    };
     var obj = data;
     if (typeof obj === "string") {
       obj = $.parseJSON(obj);
     }
-
+    if(!isArray(obj)){
+      obj = [obj];
+    }
     if (options.id && obj.length) {
 
       var i, row;
@@ -120,16 +125,15 @@
       /* MODIFIED: options.header ? 1 : 0
       /* to eliminate duplicating header as the first row of data 
       **/
-      for (i = (options.header ? 1 : 0); i < obj.length; i++) { 
+      for (i = ((obj[0]._data ||  !dictType) && options.header ? 1 : 0); i < obj.length; i++) {
         if (dictType && headerObj) {
           var bodyItem = {};
           for (key in headerObj) {
             bodyItem[key] = (obj[i] && obj[i][key] != null) ? obj[i][key] : "";
           }
-          
           table.appendTr(bodyItem, false);
-          
-        }else {
+        }
+        else {
           table.appendTr(obj[i], false);
         }
       }
