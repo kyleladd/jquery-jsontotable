@@ -1,3 +1,4 @@
+// var flatten = require('flat');
 (function($) {
   $.jsontotable = function(data, options) {
     var settings = $.extend({
@@ -11,6 +12,29 @@
     var isArray = Array.isArray || function(obj) {
       return Object.prototype.call(obj) === '[object Array]';
     };
+    // https://gist.github.com/penguinboy/762197
+    var flattenObject = function(ob) {
+      var toReturn = {};
+      
+      for (var i in ob) {
+        if (!ob.hasOwnProperty(i)) {
+          continue;
+        }
+          if ((typeof ob[i]) === 'object' && ob[i] !== null) {
+          var flatObject = flattenObject(ob[i]);
+          for (var x in flatObject) {
+            if (!flatObject.hasOwnProperty(x)) {
+              continue;
+            }
+            toReturn[i + '.' + x] = flatObject[x];
+          }
+        } 
+        else {
+          toReturn[i] = ob[i];
+        }
+      }
+      return toReturn;
+    };
     var obj = data;
     if (typeof obj === "string") {
       obj = $.parseJSON(obj);
@@ -18,6 +42,12 @@
     if(!isArray(obj)){
       obj = [obj];
     }
+    // Flatten
+    // obj = flattenObject(obj);
+    for(var index in obj){
+      obj[index] = flattenObject(obj[index]);
+    }
+    console.log(obj);
     if (options.id && obj.length) {
 
       var i, row;
