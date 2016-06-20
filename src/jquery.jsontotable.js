@@ -1,7 +1,6 @@
 // var flatten = require('flat');
 (function($) {
   $.jsontotable = function(data, options) {
-    ///////////Start Declaring Functions
     // Underscorejs
     var isArray = Array.isArray || function(obj) {
       return Object.prototype.call(obj) === '[object Array]';
@@ -68,17 +67,10 @@
   var createJSONtable = function(data){
       var table = "";
       var obj = data;
-      // if (typeof obj === "string") {
-      //   obj = $.parseJSON(obj);
-      // }
-      // if(!isArray(obj)){
-      //   obj = [obj];
-      // }
-      // Flatten
+      // Flatten object
       for(var index in obj){
         obj[index] = flattenObject(obj[index]);
       }
-      // console.log(obj);
       if (options.id && obj.length) {
 
         var i, row;
@@ -121,8 +113,6 @@
       return table;
     }
 
-    ///////////End Declaring Functions
-
     var settings = $.extend({
       id: null, // target element id
       header: true,
@@ -137,7 +127,6 @@
       data = [data];
     }
     var result = createJSONtable(data);
-    console.log(result);
     $(options.id).append(result);
 
     return this;
