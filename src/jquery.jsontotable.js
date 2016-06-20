@@ -54,7 +54,7 @@
           cellObj = rowData[key];
 
           if (typeof cellObj !== "function") { /* ADDED: this wrapper to account for people bootstrapping the ECMA Array model otherwise functions get converted to strings and show up in the object list / output */
-            if(isArray(cellObj)){
+            if(isArray(cellObj) && options.nesting === true){
               cellObj = createJSONtable(cellObj);
             }
             cell = "<" + rowTag + ">" + cellObj + "</" + rowTag + ">";
@@ -67,9 +67,11 @@
   var createJSONtable = function(data){
       var table = "";
       var obj = data;
-      // Flatten object
-      for(var index in obj){
-        obj[index] = flattenObject(obj[index]);
+      if(options.flatten === true){
+        // Flatten object
+        for(var index in obj){
+          obj[index] = flattenObject(obj[index]);
+        }
       }
       if (options.id && obj.length) {
 
@@ -116,7 +118,9 @@
     var settings = $.extend({
       id: null, // target element id
       header: true,
-      className: null
+      className: null,
+      flatten:false,
+      nesting:false //requires flatten to be true
     }, options);
 
     options = $.extend(settings, options);
