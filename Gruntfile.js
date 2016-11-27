@@ -95,8 +95,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
 
   // Default task.
-  // grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'uglify', 'cssmin']);
-  grunt.registerTask('default', ['clean', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'uglify', 'cssmin']);
 
   // Travis task.
   grunt.registerTask('travis', ['jshint', 'qunit', 'shell:coverall']);
