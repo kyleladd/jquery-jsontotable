@@ -14,7 +14,7 @@
     target.empty();
     $.jsontotable(arr, { id: "#targetel", header: true });
     equal(target.find("thead").length, 1);
-    equal(target.find("tbody").length, 0);
+    equal(target.find("tbody").length, 1);
     equal(target.find("th").length, 3);
     equal(target.find("tr").length, 1);
     equal(target.find("td").length, 0);
@@ -65,7 +65,7 @@
     target.empty();
     $.jsontotable(str, { id: "#targetel", header: true });
     equal(target.find("thead").length, 1);
-    equal(target.find("tbody").length, 0);
+    equal(target.find("tbody").length, 1);
     equal(target.find("th").length, 3);
     equal(target.find("tr").length, 1);
     equal(target.find("td").length, 0);
