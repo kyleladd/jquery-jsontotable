@@ -1,9 +1,14 @@
-// var flatten = require('flat');
 (function($) {
   $.jsontotable = function(data, options) {
     // Underscorejs
     var isArray = Array.isArray || function(obj) {
       return Object.prototype.call(obj) === '[object Array]';
+    };
+    var isObject = function(obj) {
+      var type = typeof obj;
+      // UnderscoreJS
+      return type === 'function' || type === 'object' && !!obj;
+      // return type === 'object';
     };
 
     // https://gist.github.com/penguinboy/762197
@@ -15,7 +20,7 @@
           continue;
         }
         //Make sure it is not a list, json to table will handle lists
-          if ((typeof ob[i]) === 'object' && ob[i] !== null && !isArray(ob[i])) {
+          if (isObject(ob[i]) && ob[i] !== null && !isArray(ob[i])) {
           var flatObject = flattenObject(ob[i]);
           for (var x in flatObject) {
             if (!flatObject.hasOwnProperty(x)) {
@@ -32,7 +37,7 @@
     };
       // from http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
       var clone = function (obj) {
-        if(obj == null || typeof(obj) !== "object") {
+        if(obj == null || !isObject(obj)) {
           return obj;
         }
 
@@ -48,43 +53,65 @@
         var rowTag = isHeader ? "th" : "td";
         var key,cellObj,cell;
         var row = "<tr>";
+        if(isObject(rowData)){
+          for (key in rowData) {
+            if (typeof rowData[key] !== 'function') {
+              cellObj = rowData[key];
 
-        for (key in rowData) {
-          cellObj = rowData[key];
-
-          if (typeof cellObj !== "function") { /* ADDED: this wrapper to account for people bootstrapping the ECMA Array model otherwise functions get converted to strings and show up in the object list / output */
-            if(isArray(cellObj) && options.nesting === true){
-              cellObj = createJSONtable(cellObj);
+              if (typeof cellObj !== "function") { /* ADDED: this wrapper to account for people bootstrapping the ECMA Array model otherwise functions get converted to strings and show up in the object list / output */
+                if((isArray(cellObj) || isObject(cellObj)) && options.nesting === true){
+                      if(!isArray(cellObj)){
+                        cellObj = [cellObj];
+                      }
+                  // Recursion for nested objects
+                  cellObj = createJSONtable(cellObj);
+                }
+                cell = "<" + rowTag + ">" + cellObj + "</" + rowTag + ">";
+                row += cell;
+              }
             }
-            cell = "<" + rowTag + ">" + cellObj + "</" + rowTag + ">";
-            row += cell;
           }
         }
+      else{
+        cellObj = rowData;
+        cell = "<" + rowTag + ">" + cellObj + "</" + rowTag + ">";
+        row += cell;
+      }
         row += "</tr>";
         return row;
       };
   var createJSONtable = function(data){
       var table = "";
       var obj = data;
-      if(options.flatten === true){
-        // Flatten object
-        for(var index in obj){
-          obj[index] = flattenObject(obj[index]);
+      if(options.flatten === true || options.nesting === true){
+        if (isObject(obj) && obj !== null && !isArray(obj)) {
+          // Flatten object
+          for(var index in obj){
+            if (typeof obj[index] !== 'function') {
+              obj[index] = flattenObject(obj[index]);
+            }
+          }
         }
       }
       if (options.id && obj.length) {
 
         var i;
-        table = "<table class=\"" + options.className + "\">";
+        table = "<table class=\"" + (options.className !== null ? options.className : "") + "\">";
 
         var dictType = false, headerObj = {}, key = null;
-        if (options.header) {
+        // if (options.header) {
+         // && isObject(obj[0]) && obj[0] !== null && !isArray(obj[0])
+        if (options.header && isObject(obj[0]) && obj[0] !== null && !isArray(obj[0])) {
           table += "<thead>";
-          headerObj = obj[0]._data ? clone(obj[0]._data) : clone(obj[0]);
-          
-          if (headerObj.toString() === "[object Object]") { // data type is dictonary
+          // headerObj = obj[0]._data ? clone(obj[0]._data) : clone(obj[0]);
+          headerObj = clone(obj[0]);
+          if (isObject(headerObj)) { // data type is dictonary
             dictType = true;
-            for (key in headerObj) { headerObj[key] = key; }
+            for (key in headerObj) { 
+              if (typeof headerObj[key] !== 'function') {
+                headerObj[key] = key;
+              }
+             }
           }
 
           table += createRow(headerObj, true);
@@ -96,11 +123,13 @@
         /* to eliminate duplicating header as the first row of data 
         **/
         table += "<tbody>";
-        for (i = ((obj[0]._data ||  !dictType) && options.header ? 1 : 0); i < obj.length; i++) {
-          if (dictType && headerObj) {
+        for (i = 0; i < obj.length; i++) {
+          if (dictType && headerObj && isObject(obj[0])) {
             var bodyItem = {};
             for (key in headerObj) {
-              bodyItem[key] = (obj[i] && obj[i][key] != null) ? obj[i][key] : "";
+              if (typeof headerObj[key] !== 'function') {
+                bodyItem[key] = (obj[i] && obj[i][key] != null) ? obj[i][key] : "";
+              }
             }
             table += createRow(bodyItem, false);
           }
@@ -119,7 +148,7 @@
       header: true,
       className: null,
       flatten:false,
-      nesting:false //requires flatten to be true
+      nesting:false
     }, options);
 
     options = $.extend(settings, options);
@@ -129,6 +158,10 @@
     if(!isArray(data)){
       data = [data];
     }
+    // if(typeof data[0]._data !== "undefined"){
+    //   var temp = data[0]._data;
+    //   data[0] = JSON.parse(JSON.stringify((temp)));
+    // }
     var result = createJSONtable(data);
     $(options.id).append(result);
 
