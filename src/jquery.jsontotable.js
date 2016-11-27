@@ -45,9 +45,8 @@
         return temp;
       };
       var createRow = function(rowData, isHeader){
-        var frameTag = isHeader ? "thead" : "tbody";
         var rowTag = isHeader ? "th" : "td";
-        var rowi,key,cellObj,cell,j;
+        var key,cellObj,cell;
         var row = "<tr>";
 
         for (key in rowData) {
@@ -63,7 +62,7 @@
         }
         row += "</tr>";
         return row;
-      }
+      };
   var createJSONtable = function(data){
       var table = "";
       var obj = data;
@@ -75,7 +74,7 @@
       }
       if (options.id && obj.length) {
 
-        var i, row;
+        var i;
         table = "<table class=\"" + options.className + "\">";
 
         var dictType = false, headerObj = {}, key = null;
@@ -113,7 +112,7 @@
         table += "</table>";
       }
       return table;
-    }
+    };
 
     var settings = $.extend({
       id: null, // target element id
